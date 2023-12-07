@@ -1,7 +1,3 @@
--- supabase db passoword
--- WVYVWc85roQBrUlJ
-
-
 CREATE TABLE admin (
     id_admin VARCHAR(64) PRIMARY KEY,
     username VARCHAR(64),
@@ -128,7 +124,7 @@ CREATE TABLE extra (
 );
 
 CREATE TABLE order_state (
-    id_state VARCHAR(64) PRIMARY KEY,
+    id_state VARCHAR(64) PRIMARY KEY, -- must be changed to INT to make it easier to handle it
     state VARCHAR(256)
 );
 

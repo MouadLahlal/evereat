@@ -1,59 +1,57 @@
-const db = require("../../db");
-const {ServerError, ClientError} = require('../../customclass/Error');
+const { supabase } = require("../../db");
+const { ServerError, ClientError } = require("../../customclass/Error");
 const { ReasonPhrases, StatusCodes } = require("http-status-codes");
 
-const getOrders = (req, res, next) => {
-    const id_restaurant = req.params.id;
+const getOrders = async (req, res, next) => {
+	const id_restaurant = req.params.id;
 
-    try {
-        db.getConnection((error, connection) => {
-            if (error) next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
-            connection.query("SELECT * FROM `order` WHERE id_restaurant=?", [id_restaurant], (err, result) => {
-                if (err) next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, err));
-                res.status(StatusCodes.OK).json({content:result});
-            });
-        });
-    } catch (error) {
-        next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
-    }
-}
+	let { data, error } = await supabase
+		.from("order")
+		.select("*")
+		.eq("id_restaurant", id_restaurant);
 
-const getOrder = (req, res, next) => {
-    const {id_restaurant, id_order} = req.params;
+	if (error)
+		return next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error.message));
+	return res
+		.status(StatusCodes.OK)
+		.json({ message: ReasonPhrases.OK, content: data });
+};
 
-    try {
-        db.getConnection((error, connection) => {
-            if (error) next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
-            connection.query("SELECT * FROM `order` WHERE id_restaurant=?, id_order=?", [id_restaurant, id_order], (err, result) => {
-                if (err) next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, err));
-                if (result.length > 0) res.status(StatusCodes.OK).json({content:result[0]});
-                else next(new ClientError(StatusCodes.NOT_FOUND, ReasonPhrases.NOT_FOUND));
-            });
-        });
-    } catch (error) {
-        next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
-    }
-}
+const getOrder = async (req, res, next) => {
+	const { id_restaurant, id_order } = req.params;
 
-const updateOrder = (req, res, next) => {
-    const id_state = req.body.id_state;
-    const {id_restaurant, id_order} = req.params;
+	let { data, error } = await supabase
+		.from("order")
+		.select("*")
+		.eq("id_restaurant", id_restaurant)
+		.eq("id_order", id_order);
 
-    try {
-        db.getConnection((error, connection) => {
-            if (error) next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
-            connection.query("UPDATE `order` SET id_state=? WHERE id_restaurant=?, id_order=?", [id_state, id_restaurant, id_order], (err, result) => {
-                if (err) next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, err));
-                res.status(StatusCodes.OK).json({});
-            });
-        });
-    } catch (error) {
-        next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
-    }
-}
+	if (error)
+		return next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error.message));
+	return res
+		.status(StatusCodes.OK)
+		.json({ message: ReasonPhrases.OK, content: data[0] });
+};
+
+const updateOrder = async (req, res, next) => {
+	const id_state = req.body.id_state;
+	const { id_restaurant, id_order } = req.params;
+
+	let { error } = await supabase
+		.from("order")
+		.update({
+			id_state,
+			id_restaurant,
+		})
+		.eq("id_order", id_order);
+
+	if (error)
+		return next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error.message));
+	return res.status(StatusCodes.OK).json({ message: ReasonPhrases.OK });
+};
 
 module.exports = {
-    getOrders,
-    getOrder,
-    updateOrder
+	getOrders,
+	getOrder,
+	updateOrder,
 };
