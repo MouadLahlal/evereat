@@ -3,6 +3,7 @@ const api = express();
 const auth = require("./routes/auth-route");
 const restaurant = require('./routes/restaurant-route');
 const order = require('./routes/order-route');
+const authentication = require("../middlewares/authentication");
 
 api.use(express.json());
 

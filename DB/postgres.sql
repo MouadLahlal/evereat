@@ -14,6 +14,7 @@ CREATE TABLE admin (
 CREATE TABLE restaurant (
     id_restaurant VARCHAR(64) PRIMARY KEY,
     business_name VARCHAR(1024),
+    type VARCHAR(1024),
     street_number INT,
     route VARCHAR(256),
     city VARCHAR(256),
@@ -40,7 +41,6 @@ CREATE TABLE "user" (
     email VARCHAR(128),
     telephone VARCHAR(64),
     password VARCHAR(256),
-    -- username VARCHAR(64),
     city VARCHAR(256),
     route VARCHAR(256),
     street_number INT,
@@ -87,7 +87,7 @@ CREATE TABLE deliver_options (
 
 CREATE TABLE business_hours (
     id_business_hours VARCHAR(64) PRIMARY KEY,
-    day VARCHAR(32),
+    day VARCHAR(32), -- from 1 to 7 (mon, tue, wed, thu, fri, sat, sun)
     open_hour TIME,
     close_hour TIME,
     id_restaurant VARCHAR(64),
@@ -124,13 +124,8 @@ CREATE TABLE extra (
 );
 
 CREATE TABLE order_state (
-    id_state VARCHAR(64) PRIMARY KEY, -- must be changed to INT to make it easier to handle it
+    id_state SERIAL PRIMARY KEY,
     state VARCHAR(256)
-);
-
-CREATE TABLE payment_method (
-    id_payment_method VARCHAR(64) PRIMARY KEY,
-    payment_method VARCHAR(256)
 );
 
 CREATE TABLE "order" (
@@ -138,16 +133,15 @@ CREATE TABLE "order" (
     date DATE,
     hour TIME,
     paid BOOLEAN,
+    total_price INTEGER,
     id_user VARCHAR(64),
     id_restaurant VARCHAR(64),
     id_rider VARCHAR(64),
-    id_state VARCHAR(64),
-    id_payment_method VARCHAR(64),
+    id_state INTEGER,
     FOREIGN KEY (id_user) REFERENCES "user" (id_user),
     FOREIGN KEY (id_restaurant) REFERENCES restaurant (id_restaurant),
     FOREIGN KEY (id_rider) REFERENCES rider (id_rider),
-    FOREIGN KEY (id_state) REFERENCES order_state (id_state),
-    FOREIGN KEY (id_payment_method) REFERENCES payment_method (id_payment_method)
+    FOREIGN KEY (id_state) REFERENCES order_state (id_state)
 );
 
 CREATE TABLE order_variant (

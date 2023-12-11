@@ -8,6 +8,9 @@ const authentication = (req, res, next) => {
 		var authHeader = req.headers["authorization"];
 		var token = authHeader.split(" ")[1];
 	} catch (error) {
+		if (error instanceof TypeError) {
+			return next(new ClientError(StatusCodes.BAD_REQUEST));
+		}
 		return next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error));
 	}
 
