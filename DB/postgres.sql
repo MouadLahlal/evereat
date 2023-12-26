@@ -8,7 +8,8 @@ CREATE TABLE admin (
     creates BOOLEAN DEFAULT (true),
     archive BOOLEAN DEFAULT (true),
     stats BOOLEAN DEFAULT (true),
-    user_details BOOLEAN DEFAULT (true)
+    user_details BOOLEAN DEFAULT (true),
+    superadmin BOOLEAN DEFAULT (false)
 );
 
 CREATE TABLE restaurant (

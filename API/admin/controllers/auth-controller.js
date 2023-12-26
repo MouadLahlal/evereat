@@ -29,9 +29,27 @@ const login = async (req, res, next) => {
 				process.env.JWT_KEY,
 				{ expiresIn: "2d" }
 			);
-			return res
-				.status(StatusCodes.OK)
-				.json({ message: ReasonPhrases.OK, token: token });
+			let restaurants = await supabase.from("admin").select(`
+				*, 
+				admin_restaurant (
+					restaurant (
+						id_restaurant,
+						business_name
+					)
+				)
+			`);
+			let firstRestaurant = await supabase.from("restaurant").select(`
+				*,
+				order (
+					*
+				)
+			`).eq('id_restaurant', restaurants.data[0].admin_restaurant[0].restaurant.id_restaurant);
+			return res.status(StatusCodes.OK).json({
+				message: ReasonPhrases.OK,
+				token: token,
+				restaurants: restaurants.data[0].admin_restaurant,
+				data: firstRestaurant.data[0]
+			});
 		} else return next(new ClientError(StatusCodes.NOT_FOUND));
 	} else return next(new ClientError(StatusCodes.NOT_FOUND));
 };

@@ -11,7 +11,7 @@ const authorization = (permission) => {
         
         if (error) return next(new ServerError(StatusCodes.INTERNAL_SERVER_ERROR, error.message));
         if (data.length > 0) {
-            if (data[0][permission] === 1) next();
+            if (data[0][permission] === true) next();
             else next(new ClientError(StatusCodes.UNAUTHORIZED));
         } else return next(new ClientError(StatusCodes.FORBIDDEN));
     }
